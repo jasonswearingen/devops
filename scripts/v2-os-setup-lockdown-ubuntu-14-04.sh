@@ -1,10 +1,20 @@
 #!/bin/bash
-
-#vars that need to be paramertized as script input
+####################################
+####################################
+#Vars YOU MUST CONFIGURE!!!  Edit this section
 NEWRELIC_LICENSEKEY=905129e714d35fcf6487c2c4e8e746f8277bf621
 SERVICEACCOUNT_NAME=devops-service
 SERVICEACCOUNT_GROUPNAME=service-runner
 SERVICEACCOUNT_PUBLICKEYFILE=devops-service@v2-20150312.pub
+SERVICEACCOUNT_PUBLICKEY="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAgEAveoUpjZpsb64fmvBn8Osg6jWmbDr2Rz6Mz9hQtK5C4IA/ng2eMxzNyMr9wOj6ltDNnA3Ic8KLIK451lNlvyGCX3sT/bC8FUjyTk2fg87ZxZ+J2hGgC39Pvtiy0zDBg+wkeXVFyfLyuBzUzGW0h08eYh/kumdrAt5MaDNqK+EkQBJ46W7i6XBhf36+LosRRpGvO+EyLCjUdGt1+PQ7Hp2I2SYLUowFxT1x/yUDD5Kvb2VLIMyMHvzq7o5QQvkReywTG65u8xxewb+q/m/aRYLeFyl1JpiN9SEJRL/XSNtNzRSz5hKSaI7fZHBrbBzfOSOufqtSEg1LOt2A9Ay46k28++Cor1tQDB2sqrp+aPjuHu6dO4xgNdbBuQ8nnuvOrGuuEkRG65Ci4Uksap3g/cglOntdG7yAw31Ouf0vfhEGvax/b4oE6WriewATqUOQlMTRyenmT0lILCK+b3dSCQGELvhm3f25NX/Gt2XXxkBKEDT42y7Bj2rtIfp7X1eA+H9t8g0IFi8biFqvsSJDPo/Vegw1leTL3On0SsNeumhJs47ApfRjp4zj49A/GsNZXQZ4YB8OcqsJNtkrgt0eawZxDeN/8JchMLr35tombBxpNCdcNTvlOaPH+hOh9utWDl+tOOIYyRw14hiXPs3LUrR1jdT/UkcO+la64ZFnhuBePc= devops-service@v2 4096bit rsa-key-20150312"
+TIMEZONE="America/Los_Angeles"
+####################################
+####################################
+
+#write out our public key for ssh access later
+cat > $SERVICEACCOUNT_PUBLICKEYFILE <<EOF
+$SERVICEACCOUNT_PUBLICKEY
+EOF
 
 ######### pre-prep environment vars #########
 ### get our homedir, as it seems the ~ var gets destroyed later...
@@ -41,7 +51,7 @@ sed -i "/^# deb.*multiverse/ s/^# //" /etc/apt/sources.list
 apt-get update
 
 # --------------------------------------------------------------------------------------------
-
+#function helper to check exit code of commands
 function assertExitOk(){
 set +x
 local __errorCode=$?
@@ -61,6 +71,7 @@ if [ "$SILENT" != "true" ]; then
 set -x
 fi
 }
+
 
 
 
@@ -151,7 +162,7 @@ yes | ufw enable
 assertExitOk
 
 #timezone/ntp sync
-echo "America/Los_Angeles" > /etc/timezone
+echo $TIMEZONE > /etc/timezone
 dpkg-reconfigure -f noninteractive tzdata
 #ntp
 apt-get install ntp -y -qq --force-yes
