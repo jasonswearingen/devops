@@ -1,20 +1,20 @@
 #!/bin/bash
+
+
+
 ####################################
 ####################################
 #Vars YOU MUST CONFIGURE!!!  Edit this section
-NEWRELIC_LICENSEKEY=905129e714d35fcf6487c2c4e8e746f8277bf621
+
+#NEWRELIC_LICENSEKEY=alkadjf #SET THIS IN THE ROOT SCRIPT, or do it here!!
 SERVICEACCOUNT_NAME=devops-service
 SERVICEACCOUNT_GROUPNAME=service-runner
-SERVICEACCOUNT_PUBLICKEYFILE=devops-service@v2-20150312.pub
-SERVICEACCOUNT_PUBLICKEY="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAgEAveoUpjZpsb64fmvBn8Osg6jWmbDr2Rz6Mz9hQtK5C4IA/ng2eMxzNyMr9wOj6ltDNnA3Ic8KLIK451lNlvyGCX3sT/bC8FUjyTk2fg87ZxZ+J2hGgC39Pvtiy0zDBg+wkeXVFyfLyuBzUzGW0h08eYh/kumdrAt5MaDNqK+EkQBJ46W7i6XBhf36+LosRRpGvO+EyLCjUdGt1+PQ7Hp2I2SYLUowFxT1x/yUDD5Kvb2VLIMyMHvzq7o5QQvkReywTG65u8xxewb+q/m/aRYLeFyl1JpiN9SEJRL/XSNtNzRSz5hKSaI7fZHBrbBzfOSOufqtSEg1LOt2A9Ay46k28++Cor1tQDB2sqrp+aPjuHu6dO4xgNdbBuQ8nnuvOrGuuEkRG65Ci4Uksap3g/cglOntdG7yAw31Ouf0vfhEGvax/b4oE6WriewATqUOQlMTRyenmT0lILCK+b3dSCQGELvhm3f25NX/Gt2XXxkBKEDT42y7Bj2rtIfp7X1eA+H9t8g0IFi8biFqvsSJDPo/Vegw1leTL3On0SsNeumhJs47ApfRjp4zj49A/GsNZXQZ4YB8OcqsJNtkrgt0eawZxDeN/8JchMLr35tombBxpNCdcNTvlOaPH+hOh9utWDl+tOOIYyRw14hiXPs3LUrR1jdT/UkcO+la64ZFnhuBePc= devops-service@v2 4096bit rsa-key-20150312"
+SERVICEACCOUNT_PUBLICKEYFILE=jason.robert.swearingen@master-20150302.pub
+SERVICEACCOUNT_PUBLICKEYURL="https://github.com/jasonswearingen/devops/raw/master/public-keys/$SERVICEACCOUNT_PUBLICKEYFILE"
 TIMEZONE="America/Los_Angeles"
 ####################################
 ####################################
 
-#write out our public key for ssh access later
-cat > $SERVICEACCOUNT_PUBLICKEYFILE <<EOF
-$SERVICEACCOUNT_PUBLICKEY
-EOF
 
 ######### pre-prep environment vars #########
 ### get our homedir, as it seems the ~ var gets destroyed later...
@@ -30,14 +30,17 @@ nowTime=`eval date +%H%M`
 #now=`eval date +%Y%m%d":"%H%M` #not using this incase minute changes between this and previous line
 now=$nowDate:$nowTime
 
+#get host name/ip (printenv to see env vars)
+HOSTNAME=$(hostname)
+IPADDRESS=$(ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
+
+###################################
+
+
 ###### 
 ## disable bash history (security mitigation for if our VM host provider gets hacked)
 echo \# disable bash history >> $homedir/.bashrc
 echo HISTFILE=\/dev\/null  >> $homedir/.bashrc
-
-#get host name/ip (printenv to see env vars)
-HOSTNAME=$(hostname)
-IPADDRESS=$(ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1')
 
 ########################################
 ###### setup truely non-interactive
@@ -73,7 +76,8 @@ fi
 }
 
 
-
+#download our keyfile for service account use later
+curl -L -o $SERVICEACCOUNT_PUBLICKEYFILE $SERVICEACCOUNT_PUBLICKEYURL
 
 #roughly following guide from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-14-04
 
