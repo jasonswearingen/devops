@@ -21,18 +21,44 @@ nowTime=`eval date +%H%M`
 now=$nowDate:$nowTime
 
 
+############ wrapper over apt-get to download files (retries if download fails) and then perform action.  usage example:  aptgethelper install "nethogs rar -y -qq --force-yes"
+function aptgethelper(){
+local __cmd=$1
+local __args=$2
+local retry=10 count=0
+set +x
+    # retry at most $retry times, waiting 1 minute between each try
+    while true; do
+
+        # Tell apt-get to only download packages for upgrade, and send 
+        # signal 15 (SIGTERM) if it takes more than 10 minutes
+        if timeout --kill-after=60 60 apt-get -d $__cmd --assume-yes $__args; then
+            break
+        fi
+        if (( count++ == retry )); then
+            printf "apt-get download failed for $__cmd ,  $__args\n" >&2
+            return 1
+        fi
+        sleep 60
+    done
+
+    # At this point there should be no more packages to download, so 
+    # install them.
+    apt-get $__cmd --assume-yes $__args
+}
+
 ########################################
 ###### setup truely non-interactive
 export DEBIAN_FRONTEND=noninteractive #from http://snowulf.com/2008/12/04/truly-non-interactive-unattended-apt-get-install/ and https://bugs.launchpad.net/ubuntu/+source/eglibc/+bug/935681
 # note: to use this, need "sudo -E" to copy env variables, otherwise will still get interactive prompts
 
-apt-get update
+aptgethelper update
 
 
 
-apt-get install build-essential g++ flex bison gperf ruby perl \
+aptgethelper install "build-essential g++ flex bison gperf ruby perl \
   libsqlite3-dev libfontconfig1-dev libicu-dev libfreetype6 libssl-dev \
-  libpng-dev libjpeg-dev   -y -qq --force-yes
+  libpng-dev libjpeg-dev   -y -qq --force-yes"
 
-apt-get install ttf-mscorefonts-installer -y -qq --force-yes
+aptgethelper install "ttf-mscorefonts-installer -y -qq --force-yes"
   
