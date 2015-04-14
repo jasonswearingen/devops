@@ -199,8 +199,8 @@ yes | ufw enable
 assertExitOk
 
 #timezone/ntp sync
-echo $TIMEZONE > /etc/timezone
-dpkg-reconfigure -f noninteractive tzdata
+#echo $TIMEZONE > /etc/timezone
+#dpkg-reconfigure -f noninteractive tzdata
 #ntp
 aptgethelper install "ntp -y -qq --force-yes"
 
