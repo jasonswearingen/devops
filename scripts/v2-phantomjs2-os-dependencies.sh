@@ -21,6 +21,12 @@ nowTime=`eval date +%H%M`
 now=$nowDate:$nowTime
 
 
+#log execution of this script
+cat >> $homedir/devops.log <<EOF
+$FILENAME start `eval date +%Y%m%d":"%H:%M`  ($HOSTNAME/$IPADDRESS)
+EOF
+###################################
+
 ############ wrapper over apt-get to download files (retries if download fails) and then perform action.  usage example:  aptgethelper install "nethogs rar -y -qq --force-yes"
 function aptgethelper(){
 local __cmd=$1
@@ -55,10 +61,13 @@ export DEBIAN_FRONTEND=noninteractive #from http://snowulf.com/2008/12/04/truly-
 aptgethelper update
 
 
+#dependencies of phantomjs v2 linux.
+aptgethelper install "build-essential g++ flex bison gperf ruby perl libsqlite3-dev libfontconfig1-dev libicu-dev libfreetype6 libssl-dev libpng-dev libjpeg-dev   -y -qq --force-yes"
 
-aptgethelper install "build-essential g++ flex bison gperf ruby perl \
-  libsqlite3-dev libfontconfig1-dev libicu-dev libfreetype6 libssl-dev \
-  libpng-dev libjpeg-dev   -y -qq --force-yes"
+## install extra fonts
+aptgethelper install "fontconfig libfreetype6 cabextract ttf-mscorefonts-installer unifont fonts-thai-tlwg -y -qq --force-yes"
 
-aptgethelper install "ttf-mscorefonts-installer -y -qq --force-yes"
-  
+#log execution of this script
+cat >> $homedir/devops.log <<EOF
+$FILENAME finish `eval date +%Y%m%d":"%H:%M`  ($HOSTNAME/$IPADDRESS)
+EOF
