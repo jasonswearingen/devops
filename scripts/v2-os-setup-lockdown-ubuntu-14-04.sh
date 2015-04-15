@@ -113,7 +113,7 @@ aptgethelper update
 
 
 #download our keyfile for service account use later
-curl -L --retry 10 --retry-delay 1 -o $SERVICEACCOUNT_PUBLICKEYFILE $SERVICEACCOUNT_PUBLICKEYURL
+curl -L --retry 20 --retry-delay 2 -o $SERVICEACCOUNT_PUBLICKEYFILE $SERVICEACCOUNT_PUBLICKEYURL
 
 #roughly following guide from https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-14-04
 
