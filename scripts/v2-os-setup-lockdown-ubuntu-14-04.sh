@@ -101,6 +101,9 @@ set +x
     apt-get $__cmd --assume-yes $__args
 }
 
+###### log entirty to log file
+set +x
+{
 
 aptgethelper update
 
@@ -225,6 +228,9 @@ nrsysmond-config --set license_key=$NEWRELIC_LICENSEKEY
 #utils
 aptgethelper install "rar unrar nethogs -y -qq --force-yes"  #http://stackoverflow.com/questions/1941242/the-not-so-useless-yes-bash-command-how-to-confirm-a-command-in-every-loop
 
+echo ---------------------------------------------
+echo SCRIPT COMPLETE.
+} > $homedir/$FILENAME.$now.log 
 
 #log execution of this script
 cat >> $homedir/devops.log <<EOF

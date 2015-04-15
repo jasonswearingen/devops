@@ -53,6 +53,13 @@ set +x
     apt-get $__cmd --assume-yes $__args
 }
 
+
+###### log entirty to log file
+set +x
+{
+
+
+
 ########################################
 ###### setup truely non-interactive
 export DEBIAN_FRONTEND=noninteractive #from http://snowulf.com/2008/12/04/truly-non-interactive-unattended-apt-get-install/ and https://bugs.launchpad.net/ubuntu/+source/eglibc/+bug/935681
@@ -61,11 +68,16 @@ export DEBIAN_FRONTEND=noninteractive #from http://snowulf.com/2008/12/04/truly-
 aptgethelper update
 
 
-#dependencies of phantomjs v2 linux.
+echo install dependencies of phantomjs v2 linux.
 aptgethelper install "build-essential g++ flex bison gperf ruby perl libsqlite3-dev libfontconfig1-dev libicu-dev libfreetype6 libssl-dev libpng-dev libjpeg-dev   -y -qq --force-yes"
 
-## install extra fonts
+echo install extra fonts
 aptgethelper install "fontconfig libfreetype6 cabextract ttf-mscorefonts-installer unifont fonts-thai-tlwg -y -qq --force-yes"
+
+echo ---------------------------------------------
+echo SCRIPT COMPLETE.
+} > $homedir/$FILENAME.$now.log 
+
 
 #log execution of this script
 cat >> $homedir/devops.log <<EOF
